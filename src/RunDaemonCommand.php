@@ -5,31 +5,33 @@ namespace Daemon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
 
-class DaemonCommand extends Command
+class RunDaemonCommand extends Command
 {
-    protected $signature = 'daemon:run {class} {--sleep=1}';
+    protected $signature = 'daemon:run {worker} {--sleep=1000}';
 
     /**
      * @return void
      */
     public function handle()
     {
-        $class = $this->argument('class');
+        $worker = $this->argument('worker');
+        $sleep = $this->option('sleep');
 
-        $worker = new $class;
+        $instance = new $worker;
+        if (!($instance instanceof Worker)) {
+            $this->stop(1);
+        }
 
-        if ($worker instanceof Worker) {
-            $lastRestart = $this->getTimestampOfLastRestart();
+        $lastRestart = $this->getTimestampOfLastRestart();
 
-            while (true) {
-                $worker->handle();
+        while (true) {
+            $instance->handle();
 
-                if ($this->shouldRestart($lastRestart)) {
-                    $this->stop();
-                }
-
-                usleep($this->option('sleep') * 1000);
+            if ($this->shouldRestart($lastRestart)) {
+                $this->stop();
             }
+
+            usleep($sleep * 1000);
         }
     }
 
@@ -50,7 +52,7 @@ class DaemonCommand extends Command
     }
 
     /**
-     * @param  int|null  $lastRestart
+     * @param int|null $lastRestart
      * @return bool
      */
     protected function shouldRestart($lastRestart)

@@ -13,7 +13,7 @@ class DaemonServiceProvider extends ServiceProvider
     {
         if ($this->app->runningInConsole()) {
             $this->commands([
-                DaemonCommand::class,
+                RunDaemonCommand::class,
                 RestartDaemonCommand::class,
             ]);
         }

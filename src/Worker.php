@@ -7,7 +7,5 @@ abstract class Worker
     /**
      * @return void
      */
-    public function handle() {
-
-    }
+    abstract public function handle();
 }
