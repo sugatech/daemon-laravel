@@ -1,6 +1,6 @@
 {
     "name": "sugatech/daemon-laravel",
-    "version": "20.1.0",
+    "version": "21.0.0",
     "type": "library",
     "description": "Daemon for laravel and lumen",
     "license": "MIT",
