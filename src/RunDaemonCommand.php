@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 
 class RunDaemonCommand extends Command
 {
-    protected $signature = 'daemon:run {worker} {--sleep=1000}';
+    protected $signature = 'daemon:run {worker} {--worker_count=1} {--worker_id=1} {--sleep=1000}';
 
     /**
      * @return void
@@ -15,9 +15,11 @@ class RunDaemonCommand extends Command
     public function handle()
     {
         $worker = $this->argument('worker');
-        $sleep = $this->option('sleep');
+        $workerCount = intval($this->option('worker_count'));
+        $workerId = intval($this->option('worker_id'));
+        $sleep = intval($this->option('sleep'));
 
-        $instance = new $worker;
+        $instance = new $worker($workerCount, $workerId);
         if (!($instance instanceof Worker)) {
             $this->stop(1);
         }
